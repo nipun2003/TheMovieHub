@@ -1,7 +1,5 @@
 package com.nipunapps.tmdb.homepage.presentation
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,29 +14,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.nipunapps.tmdb.R
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.core.InfoIcon
 import com.nipunapps.tmdb.core.Plus
-import com.nipunapps.tmdb.homepage.data.remote.dto.upcoming.Result
 import com.nipunapps.tmdb.homepage.presentation.components.Trending
 import com.nipunapps.tmdb.homepage.presentation.components.Upcoming
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
-import com.nipunapps.tmdb.moviedetailpage.presentation.Genre
 import com.nipunapps.tmdb.ui.Error
 import com.nipunapps.tmdb.ui.Screen
 import com.nipunapps.tmdb.ui.theme.ExtraSmallPadding
@@ -61,8 +51,10 @@ fun Homepage(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val context = LocalContext.current
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+
+        ) {
             item {
                 if (nowPlayingMovies != null) {
                     nowPlayingMovies?.let { nowPlayMovie ->

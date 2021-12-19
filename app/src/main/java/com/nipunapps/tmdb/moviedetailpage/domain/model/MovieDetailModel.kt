@@ -1,12 +1,12 @@
 package com.nipunapps.tmdb.moviedetailpage.domain.model
 
-import com.nipunapps.tmdb.moviedetailpage.data.dto.*
+import com.nipunapps.tmdb.moviedetailpage.data.dto.movie_detail.*
 
 data class MovieDetailModel(
     val adult: Boolean,
     val backDropPath: String?,
     val belongsToCollection: BelongsToCollection?,
-    val budget: Int,
+    val budget: String,
     val casts: List<Cast>,
     val genres: List<Genre>,
     val homepage: String?,
@@ -19,7 +19,7 @@ data class MovieDetailModel(
     val productionCompanies: List<ProductionCompany>,
     val productionCountries: List<ProductionCountry>,
     val release_date: String,
-    val revenue: Int,
+    val revenue: String,
     val runtime: Int?,
     val status: String,
     val tagline: String?,

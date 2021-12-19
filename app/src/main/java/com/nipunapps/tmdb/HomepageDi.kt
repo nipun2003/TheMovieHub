@@ -1,6 +1,12 @@
 package com.nipunapps.tmdb
 
+import android.app.Application
+import androidx.room.Room
 import com.nipunapps.tmdb.core.Constants
+import com.nipunapps.tmdb.feature_search.data.local.QueryDatabase
+import com.nipunapps.tmdb.feature_search.data.local.QueryInfoDao
+import com.nipunapps.tmdb.feature_search.data.repository.QueryResultRepositoryImpl
+import com.nipunapps.tmdb.feature_search.domain.repository.QueryResultRepository
 import com.nipunapps.tmdb.homepage.data.remote.HomeApi
 import com.nipunapps.tmdb.homepage.data.repository.MoviesApiImpl
 import com.nipunapps.tmdb.homepage.domain.repository.MoviesApi
@@ -34,5 +40,25 @@ object HomepageDi {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(HomeApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun getQueryResultRepository(api : HomeApi,dao: QueryInfoDao) : QueryResultRepository {
+        return QueryResultRepositoryImpl(api,dao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideQueryDao(db : QueryDatabase) : QueryInfoDao{
+        return db.dao
+    }
+
+    @Singleton
+    @Provides
+    fun provideDatabase(app : Application) : QueryDatabase{
+        return Room.databaseBuilder(
+            app,QueryDatabase::class.java,"query_db"
+        ).build()
     }
 }

@@ -16,7 +16,7 @@ import com.nipunapps.tmdb.core.Constants.DAY
 import com.nipunapps.tmdb.core.Constants.ALL
 import com.nipunapps.tmdb.homepage.domain.use_cases.GetTrending
 import com.nipunapps.tmdb.moviedetailpage.domain.use_cases.GetMovieDetail
-import com.nipunapps.tmdb.moviedetailpage.presentation.MovieDetailState
+import com.nipunapps.tmdb.moviedetailpage.presentation.states.MovieDetailState
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(

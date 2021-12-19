@@ -27,4 +27,4 @@ val SmallPadding = 10.dp
 val BigPadding = 20.dp
 val ExtraSmallPadding = 5.dp
 val ExtraBigPadding = 30.dp
-val PaddingStatusBar = 46.dp
+val PaddingStatusBar = 40.dp

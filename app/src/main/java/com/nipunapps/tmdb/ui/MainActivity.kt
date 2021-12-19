@@ -6,7 +6,10 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -14,18 +17,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavType
-import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.nipunapps.tmdb.R
-import com.nipunapps.tmdb.core.Constants
+import com.nipunapps.tmdb.core.Constants.MOVIE
+import com.nipunapps.tmdb.core.Constants.TV
+import com.nipunapps.tmdb.feature_search.presentation.SearchScreen
 import com.nipunapps.tmdb.homepage.presentation.Homepage
-import com.nipunapps.tmdb.moviedetailpage.presentation.MovieDetailScreen
+import com.nipunapps.tmdb.moviedetailpage.presentation.screens.MovieDetailScreen
+import com.nipunapps.tmdb.moviedetailpage.presentation.screens.TvDetailScreen
 import com.nipunapps.tmdb.ui.theme.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,23 +54,31 @@ class MainActivity : ComponentActivity() {
                 var toolbarVisibility by remember {
                     mutableStateOf(true)
                 }
+                var toolbarBackground by remember {
+                    mutableStateOf(false)
+                }
+
+                val backgroundColor by animateColorAsState(if (toolbarBackground) ToolbarColor else Color.Transparent)
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     Box(modifier = Modifier.fillMaxSize()) {
+                        val navController = rememberAnimatedNavController()
                         if (toolbarVisibility) {
                             Toolbar(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .background(backgroundColor)
                                     .padding(
                                         start = BigPadding,
                                         top = PaddingStatusBar,
                                         bottom = SmallPadding
                                     )
                                     .align(Alignment.TopStart)
-                            )
+                            ) {
+                                navController.navigate(Screen.SearchResult.route)
+                            }
                         }
 
-                        val navController = rememberAnimatedNavController()
                         AnimatedNavHost(
                             navController = navController,
                             startDestination = Screen.HomeScreen.route,
@@ -76,25 +92,48 @@ class MainActivity : ComponentActivity() {
                                 popEnterTransition = { enterAnimation(-300) }
                             ) {
                                 toolbarVisibility = true
+                                toolbarBackground = false
                                 Homepage(navController = navController)
+                            }
+                            composable(
+                                route = Screen.SearchResult.route,
+                                enterTransition = { enterAnimation(300) },
+                                popExitTransition = { exitAnimation(300) },
+                                exitTransition = { exitAnimation(-300) },
+                                popEnterTransition = { enterAnimation(-300) }
+                            ) {
+                                toolbarVisibility = false
+                                SearchScreen(navController = navController)
                             }
                             composable(
                                 route = Screen.MovieDetailScreen.route + "/{media_type}/{movieId}",
                                 arguments = listOf(navArgument("movieId") {
                                     type = NavType.IntType
                                 }),
-                                enterTransition = { enterAnimation(300)},
-                                popExitTransition = { exitAnimation(300)}
+                                exitTransition = { exitAnimation(-300) },
+                                popEnterTransition = { enterAnimation(-300) },
+                                enterTransition = { enterAnimation(300) },
+                                popExitTransition = { exitAnimation(300) }
                             ) { stack ->
                                 stack.arguments?.getString("media_type")?.let { type ->
                                     stack.arguments?.getInt("movieId")?.let { id ->
                                         toolbarVisibility = true
                                         when (type) {
-                                            Constants.MOVIE -> {
+                                            MOVIE -> {
                                                 MovieDetailScreen(
                                                     navController = navController,
                                                     movieId = id
-                                                )
+                                                ) {
+                                                    toolbarBackground = it
+                                                }
+                                            }
+                                            TV -> {
+                                                TvDetailScreen(
+                                                    navController = navController,
+                                                    tvId = id,
+                                                ) {
+                                                    toolbarBackground = it
+                                                }
                                             }
                                             else -> {
                                                 Box(modifier = Modifier.fillMaxSize()) {
@@ -121,7 +160,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Toolbar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSearchClick: (Unit) -> Unit
 ) {
     Row(
         modifier = modifier,
@@ -132,5 +172,24 @@ fun Toolbar(
             painter = painterResource(id = R.drawable.tmdblogo),
             contentDescription = "App logo",
         )
+        Box(
+            modifier =
+            Modifier
+                .width(100.dp)
+                .height(60.dp)
+                .padding(SmallPadding)
+                .clickable {
+                    onSearchClick(Unit)
+                }
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "Search",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(top = ExtraSmallPadding, bottom = ExtraSmallPadding, end = SmallPadding)
+                    .align(Alignment.CenterEnd)
+            )
+        }
     }
 }
