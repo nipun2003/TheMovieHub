@@ -12,7 +12,10 @@ val ToolbarColor = Color(0xFF032541)
 val ToolbarDarkVariant = Color(0xFF0C1F30)
 val Black = Color(0xFF121212)
 val SemiToolbar = Color(0x80032541)
+val ToolbarComplement = Color(0xFFAD7E34)
+val ChipBorder = Color(0xFF7DC2FA)
 val GenreColor = Color(0xFFebe4e4)
+val CursorColor = Color(0xFFFAC97D)
 
 // Color Combo
 

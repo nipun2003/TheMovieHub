@@ -25,7 +25,7 @@ interface HomeApi {
     @GET("movie/now_playing?api_key=$AUTH_API&language=hi&region=IN")
     suspend fun getNowPlaying(): UpcomingDto
 
-    @GET("movie/{movie_id}?api_key=$AUTH_API&append_to_response=videos,credits&region=IN")
+    @GET("movie/{movie_id}?api_key=$AUTH_API&append_to_response=videos,credits,images&region=IN")
     suspend fun getMovieDetails(
         @Path(value = "movie_id") movieId: Int?
     ): MovieDetailDto

@@ -1,40 +1,42 @@
 package com.nipunapps.tmdb.feature_search.presentation
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
-import com.google.accompanist.flowlayout.FlowRow
 import com.nipunapps.tmdb.R
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.feature_search.domain.model.SingleSearchResult
-import com.nipunapps.tmdb.moviedetailpage.presentation.screens.Genre
 import com.nipunapps.tmdb.ui.Error
 import com.nipunapps.tmdb.ui.Screen
 import com.nipunapps.tmdb.ui.theme.*
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SearchScreen(
@@ -43,7 +45,7 @@ fun SearchScreen(
 ) {
     val searchResultState = viewModel.searchResult.value
     val message = viewModel.searchResult.value.message
-    val prevQueries = viewModel.prevQuery.value
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -61,43 +63,7 @@ fun SearchScreen(
                     .fillMaxSize()
                     .padding(SmallPadding)
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    val focusRequester = remember {
-                        FocusRequester()
-                    }
-                    TextField(
-                        value = viewModel.searchQuery.value,
-                        onValueChange = {
-                            if (it.isNotEmpty())
-                                viewModel.onSearch(it)
-                            else {
-                                viewModel.cancelSearch()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                        placeholder = {
-                            Text(text = "Search...")
-                        },
-                    )
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
-                        contentDescription = "close",
-                        modifier = Modifier
-                            .size(50.dp)
-                            .padding(SmallPadding)
-                            .align(Alignment.CenterEnd)
-                            .clickable {
-                                viewModel.cancelSearch()
-                                focusRequester.requestFocus()
-                            }
-                    )
-                }
-                PrevSearch(
-                    modifier = Modifier.fillMaxWidth(),
-                    list = prevQueries
-                ) {
-                    viewModel.onSearch(it)
-                }
+                SearchBox(viewModel = viewModel)
                 Spacer(modifier = Modifier.size(BigPadding))
                 if (searchResultState.data.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -118,6 +84,14 @@ fun SearchScreen(
                 }
 
             }
+        }
+        if (searchResultState.isFromSuccess && searchResultState.data.isEmpty()) {
+            Text(
+                text = "No Result Found",
+                modifier = Modifier.align(Alignment.Center),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.h3
+            )
         }
         if (searchResultState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -199,48 +173,137 @@ fun SearchResultCard(
 }
 
 @Composable
+fun SearchBox(
+    viewModel: SearchViewModel,
+) {
+    val focusManager = LocalFocusManager.current
+    val prevQueries = viewModel.prevQuery.value
+    val focusRequester = remember {
+        FocusRequester()
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = SmallPadding,
+        color = ToolbarColor,
+        border = BorderStroke(
+            width = 1.5.dp,
+            color = ToolbarComplement
+        ),
+        shape = RoundedCornerShape(SmallPadding)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            var chipsVisibility by remember {
+                mutableStateOf(false)
+            }
+            Box(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = viewModel.searchQuery.value,
+                    onValueChange = viewModel::updateQuery,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                        .onFocusChanged {
+                            chipsVisibility = it.hasFocus
+                        },
+                    placeholder = {
+                        Text(
+                            text = "Search for a show, movie, people etc.",
+                            style = MaterialTheme.typography.body1,
+                            fontWeight = FontWeight.W100
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        cursorColor = CursorColor
+                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        autoCorrect = true,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(onSearch = {
+                        viewModel.onSearch(viewModel.searchQuery.value)
+                        focusManager.clearFocus(force = true)
+                    }),
+                    singleLine = true,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_search),
+                            contentDescription = "Search",
+                            modifier = Modifier.size(ExtraBigPadding)
+                        )
+                    },
+                    textStyle = MaterialTheme.typography.h3,
+                )
+                if (viewModel.closeIconState.value) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = "close",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .padding(SmallPadding)
+                            .align(Alignment.CenterEnd)
+                            .clickable {
+                                viewModel.cancelSearch()
+                                focusRequester.requestFocus()
+                            }
+                    )
+                }
+            }
+            AnimatedVisibility(visible = chipsVisibility) {
+                PrevSearch(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    list = prevQueries
+                ) {
+                    viewModel.onSearch(it)
+                    focusManager.clearFocus(force = true)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun PrevSearch(
     modifier: Modifier = Modifier,
     list: List<String>,
     onclick: (String) -> Unit
 ) {
     val queries = list.reversed()
-    Row(
-        modifier = modifier
-            .padding(top = SmallPadding, start = SmallPadding)
-            .clip(RoundedCornerShape(ExtraSmallPadding))
-            .padding(SmallPadding),
-        verticalAlignment = Alignment.CenterVertically
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(SmallPadding)
     ) {
-        Text(
-            text = "Previous Search",
-            style = MaterialTheme.typography.h3
-        )
-        Spacer(modifier = Modifier.size(SmallPadding))
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(end = BigPadding)
-        ) {
-            items(queries.size) {
-                if (it < 3) {
-                    if (it > 0) {
-                        Spacer(modifier = Modifier.size(ExtraSmallPadding))
-                    }
-                    Box(
-                        Modifier
-                            .clip(RoundedCornerShape(ExtraSmallPadding))
-                            .border(1.dp, color = Color.Green)
-                            .padding(SmallPadding)
-                            .clickable {
-                                onclick(queries[it])
-                            }
-                    ) {
-                        Text(
-                            text = queries[it],
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+        items(queries.size) {
+            if (it < 5) {
+                if (it > 0) {
+                    Spacer(modifier = Modifier.size(ExtraSmallPadding))
+                }
+                Surface(
+                    modifier = Modifier
+                        .clickable {
+                            onclick(queries[it])
+                        },
+                    contentColor = Color.White,
+                    color = Color.Transparent,
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = ChipBorder
+                    ),
+                    shape = RoundedCornerShape(SmallPadding)
+                ) {
+                    Text(
+                        text = queries[it],
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(SmallPadding)
+                    )
                 }
             }
         }
