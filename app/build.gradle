@@ -114,4 +114,6 @@ dependencies {
 
     // optional - RxJava3 support
     implementation "androidx.datastore:datastore-preferences-rxjava3:1.0.0"
+
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
 }

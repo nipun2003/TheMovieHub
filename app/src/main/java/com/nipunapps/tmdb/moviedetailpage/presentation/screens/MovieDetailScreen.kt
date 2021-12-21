@@ -28,9 +28,7 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.core.toTime
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.FImage
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.OverView
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.RecommendComp
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.*
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.movie.ProductionCompany
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.movie.TopBilledCast
 import com.nipunapps.tmdb.moviedetailpage.presentation.viewmodels.MovieDetailViewModel
@@ -47,6 +45,10 @@ fun MovieDetailScreen(
 ) {
     val movieDetailState = viewModel.movieDetailState.value
     val recommendState = viewModel.recommendation.value
+    val openDialog = remember { mutableStateOf(false) }
+    val key = remember {
+        mutableStateOf("")
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -132,6 +134,16 @@ fun MovieDetailScreen(
                             list = images.backdrops
                         )
                     }
+
+                    if (movie.videos.results.isNotEmpty()) {
+                        VideoComp(
+                            modifier = Modifier.fillMaxWidth(),
+                            videos = movie.videos.results
+                        ) {
+                            openDialog.value = true
+                            key.value = it
+                        }
+                    }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))
                         RecommendComp(
@@ -203,6 +215,7 @@ fun MovieDetailScreen(
                 }
             }
         }
+        AlertDialogComponent(openDialog = openDialog, key.value)
     }
 }
 

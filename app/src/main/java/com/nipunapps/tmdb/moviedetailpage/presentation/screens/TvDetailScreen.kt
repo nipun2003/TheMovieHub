@@ -19,9 +19,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.moviedetailpage.domain.model.TVDetailModel
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.FImage
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.OverView
-import com.nipunapps.tmdb.moviedetailpage.presentation.components.RecommendComp
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.*
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.AvailableOn
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.ProductionCompany
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.TopBilledCast
@@ -39,6 +37,10 @@ fun TvDetailScreen(
 ) {
     val tvDetailState = viewModel.tvDetailState.value
     val recommendState = viewModel.recommendation.value
+    val openDialog = remember { mutableStateOf(false) }
+    val key = remember {
+        mutableStateOf("")
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
         val showButton by remember {
@@ -127,6 +129,15 @@ fun TvDetailScreen(
                         list = tv.images.backdrops,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    if (tv.videos.results.isNotEmpty()) {
+                        VideoComp(
+                            modifier = Modifier.fillMaxWidth(),
+                            videos = tv.videos.results
+                        ) {
+                            openDialog.value = true
+                            key.value = it
+                        }
+                    }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))
                         RecommendComp(
@@ -179,6 +190,7 @@ fun TvDetailScreen(
                 }
             }
         }
+        AlertDialogComponent(openDialog = openDialog, key.value)
     }
 }
 
