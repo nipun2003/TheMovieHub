@@ -4,7 +4,9 @@ object Constants {
     const val BASE_URL = "https://api.themoviedb.org/3/"
     const val AUTH_API = "b05ff04b7d21f0487de83fdd89276cf9"
     const val POSTER_PATH = "https://www.themoviedb.org/t/p/original/"
+    const val POSTER_Logo = "https://www.themoviedb.org/t/p/original"
     const val IMAGE_PATH = "https://image.tmdb.org/t/p/w500/"
+    const val LOGO_PATH = "https://image.tmdb.org/t/p/w500"
 
     //Trending Constants
     const val ALL = "all"

@@ -28,7 +28,9 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.core.toTime
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.FImage
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.OverView
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.RecommendComp
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.movie.ProductionCompany
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.movie.TopBilledCast
 import com.nipunapps.tmdb.moviedetailpage.presentation.viewmodels.MovieDetailViewModel
@@ -44,6 +46,7 @@ fun MovieDetailScreen(
     showBackground: (Boolean) -> Unit
 ) {
     val movieDetailState = viewModel.movieDetailState.value
+    val recommendState = viewModel.recommendation.value
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -123,6 +126,22 @@ fun MovieDetailScreen(
                             .fillMaxWidth()
                             .padding(bottom = BigPadding)
                     )
+                    movie.images?.let { images ->
+                        FImage(
+                            modifier = Modifier.fillMaxWidth(),
+                            list = images.backdrops
+                        )
+                    }
+                    if (recommendState.isNotEmpty()) {
+                        Spacer(modifier = Modifier.size(SmallPadding))
+                        RecommendComp(
+                            list = recommendState,
+                            modifier = Modifier.fillMaxWidth()
+                        ) { type, id ->
+                            navController.navigate(Screen.MovieDetailScreen.route + "/$type/$id")
+                        }
+                    }
+
                 }
                 item {
                     GeneralInfo(

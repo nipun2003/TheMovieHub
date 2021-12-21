@@ -44,6 +44,7 @@ data class MovieDetailDto(
             genres = genres,
             homepage = homepage,
             id = id,
+            images = images,
             originalLanguage = original_language,
             originalTitle = original_title,
             overview = overview,

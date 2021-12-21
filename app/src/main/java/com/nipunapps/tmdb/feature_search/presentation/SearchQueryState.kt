@@ -6,5 +6,6 @@ data class SearchQueryState(
     val isLoading : Boolean = false,
     val data : List<SingleSearchResult> = emptyList(),
     val message : String? = null,
-    val isFromSuccess : Boolean = false
+    val isFromSuccess : Boolean = false,
+    val isRecent : Boolean = false
 )

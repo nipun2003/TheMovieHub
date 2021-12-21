@@ -31,10 +31,7 @@ import com.nipunapps.tmdb.homepage.presentation.components.Upcoming
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
 import com.nipunapps.tmdb.ui.Error
 import com.nipunapps.tmdb.ui.Screen
-import com.nipunapps.tmdb.ui.theme.ExtraSmallPadding
-import com.nipunapps.tmdb.ui.theme.SemiToolbar
-import com.nipunapps.tmdb.ui.theme.SmallPadding
-import com.nipunapps.tmdb.ui.theme.ToolbarColor
+import com.nipunapps.tmdb.ui.theme.*
 
 @ExperimentalPagerApi
 @Composable
@@ -85,12 +82,13 @@ fun Homepage(
                     Upcoming(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        header = "Upcoming Movies",
+                        header = "Released this year",
                         movies = upComingMovies
                     ) { id ->
                         navController.navigate(Screen.MovieDetailScreen.route + "/movie/$id")
                     }
                 }
+                Spacer(modifier = Modifier.size(ExtraBigPadding))
             }
         }
         if (upcomingMoviesState.value.isLoading) {

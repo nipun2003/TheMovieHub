@@ -1,5 +1,6 @@
 package com.nipunapps.tmdb.feature_search.presentation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -35,27 +36,33 @@ class SearchViewModel @Inject constructor(
     val prevQuery: State<List<String>> = _prevQuery
 
     private val _closeIconState = mutableStateOf(false)
-    val closeIconState : State<Boolean> = _closeIconState
+    val closeIconState: State<Boolean> = _closeIconState
 
     init {
         viewModelScope.launch {
             _prevQuery.value = dao.getPreviousSearch().map {
                 it.query
+            }.reversed()
+            if (prevQuery.value.isNotEmpty()) {
+                Log.e("prev",prevQuery.value[0])
+                onSearch(prevQuery.value[0], isRecent = true)
             }
         }
     }
 
-    fun updateQuery(query: String){
+    fun updateQuery(query: String) {
         _searchQuery.value = query
         _closeIconState.value = query.isNotEmpty()
     }
 
-    fun onSearch(query: String) {
-        if(query.isEmpty()){
+    fun onSearch(query: String, isRecent: Boolean = false) {
+        if (query.isEmpty()) {
             return
         }
-        _searchQuery.value = query
-        _closeIconState.value = query.isNotEmpty()
+        if (!isRecent) {
+            _searchQuery.value = query
+            _closeIconState.value = query.isNotEmpty()
+        }
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(500L)
@@ -65,7 +72,8 @@ class SearchViewModel @Inject constructor(
                         _searchResult.value = SearchQueryState(
                             isLoading = false,
                             data = result.data?.results ?: emptyList(),
-                            isFromSuccess = true
+                            isFromSuccess = true,
+                            isRecent = isRecent
                         )
                         _prevQuery.value = dao.getPreviousSearch().map { it.query }
                     }

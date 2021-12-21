@@ -6,6 +6,7 @@ import com.nipunapps.tmdb.feature_search.data.remote.dto.QueryResultDto
 import com.nipunapps.tmdb.homepage.data.remote.dto.trending.TrendingMovieDto
 import com.nipunapps.tmdb.homepage.data.remote.dto.upcoming.UpcomingDto
 import com.nipunapps.tmdb.moviedetailpage.data.dto.movie_detail.MovieDetailDto
+import com.nipunapps.tmdb.moviedetailpage.data.dto.recomendation.RecommendDto
 import com.nipunapps.tmdb.moviedetailpage.data.dto.tv_detail.TVDetailDto
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -38,4 +39,9 @@ interface HomeApi {
     @GET("search/multi?api_key=${Constants.AUTH_API}&include_adult=true")
     suspend fun searchAll(@Query(value = "query") query : String?) : QueryResultDto
 
+    @GET("{mediaType}/{mediaId}/recommendations?api_key=$AUTH_API&language=en")
+    suspend fun getRecommendation(
+        @Path(value = "mediaType") type : String,
+        @Path(value = "mediaId") id : Int
+    ):RecommendDto
 }

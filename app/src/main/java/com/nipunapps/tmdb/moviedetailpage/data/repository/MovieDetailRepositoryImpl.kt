@@ -5,6 +5,7 @@ import com.nipunapps.tmdb.core.Resource
 import com.nipunapps.tmdb.homepage.data.remote.HomeApi
 import com.nipunapps.tmdb.homepage.domain.models.UpcomingModel
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
+import com.nipunapps.tmdb.moviedetailpage.domain.model.RecommendModel
 import com.nipunapps.tmdb.moviedetailpage.domain.model.TVDetailModel
 import com.nipunapps.tmdb.moviedetailpage.domain.repository.MovieDetailRepository
 import kotlinx.coroutines.flow.Flow
@@ -69,4 +70,32 @@ class MovieDetailRepositoryImpl(
             )
         }
     }
+
+    override fun getRecommendation(type: String, id: Int): Flow<Resource<List<RecommendModel>>> =
+        flow {
+            emit(Resource.Loading<List<RecommendModel>>())
+            try {
+                val res = api.getRecommendation(type,id).results.map { it.toRecommendModel() }
+                emit(Resource.Success<List<RecommendModel>>(data = res))
+            } catch (e: HttpException) {
+                emit(
+                    Resource.Error<List<RecommendModel>>(
+                        message = "Something went wrong",
+                    )
+                )
+            } catch (e: IOException) {
+                Log.e("Nipun", e.message.toString())
+                emit(
+                    Resource.Error<List<RecommendModel>>(
+                        message = "Couldn't reach server, check your internet connection.",
+                    )
+                )
+            } catch (e: Exception) {
+                emit(
+                    Resource.Error<List<RecommendModel>>(
+                        message = e.message.toString(),
+                    )
+                )
+            }
+        }
 }

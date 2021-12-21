@@ -11,6 +11,7 @@ data class MovieDetailModel(
     val genres: List<Genre>,
     val homepage: String?,
     val id: Int,
+    val images : Images?,
     val originalLanguage: String,
     val originalTitle: String,
     val overview: String?,

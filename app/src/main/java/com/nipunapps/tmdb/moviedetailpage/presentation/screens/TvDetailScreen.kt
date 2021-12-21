@@ -1,5 +1,6 @@
 package com.nipunapps.tmdb.moviedetailpage.presentation.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +15,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.google.accompanist.flowlayout.FlowRow
+import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.moviedetailpage.domain.model.TVDetailModel
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.FImage
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.OverView
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.RecommendComp
+import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.AvailableOn
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.ProductionCompany
 import com.nipunapps.tmdb.moviedetailpage.presentation.components.tv.TopBilledCast
 import com.nipunapps.tmdb.moviedetailpage.presentation.viewmodels.TvDetailViewModel
@@ -32,6 +38,7 @@ fun TvDetailScreen(
     showBackground: (Boolean) -> Unit
 ) {
     val tvDetailState = viewModel.tvDetailState.value
+    val recommendState = viewModel.recommendation.value
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
         val showButton by remember {
@@ -90,6 +97,13 @@ fun TvDetailScreen(
                     }
                 }
                 item {
+                    AvailableOn(
+                        networks = tv.networks,
+                        modifier = Modifier.fillMaxWidth(),
+                        homepage = tv.homepage
+                    )
+                }
+                item {
                     HorizontalLine()
                 }
                 item {
@@ -107,6 +121,45 @@ fun TvDetailScreen(
                                 .padding(bottom = BigPadding)
                         )
                     }
+                }
+                item {
+                    FImage(
+                        list = tv.images.backdrops,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (recommendState.isNotEmpty()) {
+                        Spacer(modifier = Modifier.size(SmallPadding))
+                        RecommendComp(
+                            list = recommendState,
+                            modifier = Modifier.fillMaxWidth()
+                        ) { type, id ->
+                            navController.navigate(Screen.MovieDetailScreen.route + "/$type/$id")
+                        }
+                    }
+                }
+                item {
+                    if (tv.in_production) {
+                        GeneralInfo(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    horizontal = SmallPadding,
+                                    vertical = SmallPadding
+                                ),
+                            header = "Status",
+                            body = "in_production"
+                        )
+                    }
+                    GeneralInfo(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = SmallPadding,
+                                vertical = SmallPadding
+                            ),
+                        header = "Original Language",
+                        body = tv.original_language
+                    )
                 }
                 item {
                     Spacer(modifier = Modifier.size(PaddingStatusBar))

@@ -45,7 +45,8 @@ fun SearchScreen(
 ) {
     val searchResultState = viewModel.searchResult.value
     val message = viewModel.searchResult.value.message
-
+    val isRecent = viewModel.searchResult.value.isRecent
+    val prevQuery = viewModel.prevQuery.value.reversed()
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -66,6 +67,13 @@ fun SearchScreen(
                 SearchBox(viewModel = viewModel)
                 Spacer(modifier = Modifier.size(BigPadding))
                 if (searchResultState.data.isNotEmpty()) {
+                    if (isRecent) {
+                        Text(
+                            text = "Recent Search : ${prevQuery[0]}",
+                            style = MaterialTheme.typography.body1,
+                            modifier = Modifier.padding(start = SmallPadding)
+                        )
+                    }
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(searchResultState.data.size) { i ->
                             if (i > 0) {
@@ -177,7 +185,7 @@ fun SearchBox(
     viewModel: SearchViewModel,
 ) {
     val focusManager = LocalFocusManager.current
-    val prevQueries = viewModel.prevQuery.value
+    val prevQueries = viewModel.prevQuery.value.reversed()
     val focusRequester = remember {
         FocusRequester()
     }
@@ -259,7 +267,7 @@ fun SearchBox(
                 PrevSearch(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    list = prevQueries
+                    queries = prevQueries
                 ) {
                     viewModel.onSearch(it)
                     focusManager.clearFocus(force = true)
@@ -272,10 +280,9 @@ fun SearchBox(
 @Composable
 fun PrevSearch(
     modifier: Modifier = Modifier,
-    list: List<String>,
+    queries: List<String>,
     onclick: (String) -> Unit
 ) {
-    val queries = list.reversed()
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(SmallPadding)
