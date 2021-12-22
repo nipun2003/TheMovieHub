@@ -93,7 +93,9 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 toolbarVisibility = true
                                 toolbarBackground = false
-                                Homepage(navController = navController)
+                                Homepage(navController = navController){
+                                    toolbarBackground = it
+                                }
                             }
                             composable(
                                 route = Screen.SearchResult.route,

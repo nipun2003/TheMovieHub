@@ -3,7 +3,6 @@ package com.nipunapps.tmdb.moviedetailpage.data.repository
 import android.util.Log
 import com.nipunapps.tmdb.core.Resource
 import com.nipunapps.tmdb.homepage.data.remote.HomeApi
-import com.nipunapps.tmdb.homepage.domain.models.UpcomingModel
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
 import com.nipunapps.tmdb.moviedetailpage.domain.model.RecommendModel
 import com.nipunapps.tmdb.moviedetailpage.domain.model.TVDetailModel

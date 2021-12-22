@@ -3,13 +3,19 @@ package com.nipunapps.tmdb.core
 import java.sql.Timestamp
 import java.util.regex.Pattern
 
-fun checkReleaseDates(releaseDate : String) : Boolean{
+fun checkReleaseDates(releaseDate : String?) : Boolean{
+    if(releaseDate == null) return true
     val relDate = "$releaseDate 00:00:00"
     val relDateInSec = (Timestamp.valueOf(relDate).time)/1000L
     val currentTimeInSec =  (Timestamp(System.currentTimeMillis()).time)/1000L
     val diff : Long = 86400*3
     if((currentTimeInSec - relDateInSec) <= diff) return true
     return false
+}
+
+fun String.toTime():Long{
+    val relDate = "$this 00:00:00"
+    return (Timestamp.valueOf(relDate).time)/1000L
 }
 
 fun String.isValidName():Boolean{

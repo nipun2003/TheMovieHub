@@ -10,6 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,34 +36,43 @@ const val YT_END = "/hqdefault.jpg"
 fun VideoComp(
     videos: List<Result>,
     modifier: Modifier = Modifier,
-    onclick: (String) -> Unit
+//    onclick: (String) -> Unit
 ) {
-    Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.padding(horizontal = SmallPadding),
-            text = "Videos",
-            style = MaterialTheme.typography.h3,
-        )
-        Spacer(modifier = Modifier.size(SmallPadding))
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = SmallPadding),
-            horizontalArrangement = Arrangement.Start
-        ) {
-            items(videos.size) {
-                SingleVideo(
-                    video = videos[it],
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(SmallPadding))
-                        .width(250.dp)
-                        .aspectRatio(1.4f)
-                        .padding(end = BigPadding)
-                ) {
-                    onclick(it)
+    val openDialog = remember { mutableStateOf(false) }
+    val key = remember {
+        mutableStateOf("")
+    }
+    Box(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                modifier = Modifier.padding(horizontal = SmallPadding),
+                text = "Videos",
+                style = MaterialTheme.typography.h3,
+            )
+            Spacer(modifier = Modifier.size(SmallPadding))
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = SmallPadding),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                items(videos.size) {
+                    SingleVideo(
+                        video = videos[it],
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(SmallPadding))
+                            .width(250.dp)
+                            .aspectRatio(1.4f)
+                            .padding(end = BigPadding)
+                    ) {
+                        openDialog.value = true
+                        key.value = it
+//                        onclick(it)
+                    }
                 }
             }
         }
+        AlertDialogComponent(openDialog = openDialog, key.value)
     }
 }
 
@@ -119,16 +130,16 @@ fun AlertDialogComponent(
                     .fillMaxWidth()
                     .aspectRatio(1.5f)
                     .padding(SmallPadding)
-            ){
-                AndroidView(factory = {context ->
+            ) {
+                AndroidView(factory = { context ->
                     YouTubePlayerView(context).apply {
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT
                         )
-                        addYouTubePlayerListener(object : AbstractYouTubePlayerListener(){
+                        addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
                             override fun onReady(youTubePlayer: YouTubePlayer) {
-                                youTubePlayer.loadVideo(key,0F)
+                                youTubePlayer.loadVideo(key, 0F)
                             }
                         })
                     }

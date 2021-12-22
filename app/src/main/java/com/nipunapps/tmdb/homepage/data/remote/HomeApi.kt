@@ -3,6 +3,7 @@ package com.nipunapps.tmdb.homepage.data.remote
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.core.Constants.AUTH_API
 import com.nipunapps.tmdb.feature_search.data.remote.dto.QueryResultDto
+import com.nipunapps.tmdb.homepage.data.remote.dto.popular.PopularityDto
 import com.nipunapps.tmdb.homepage.data.remote.dto.trending.TrendingMovieDto
 import com.nipunapps.tmdb.homepage.data.remote.dto.upcoming.UpcomingDto
 import com.nipunapps.tmdb.moviedetailpage.data.dto.movie_detail.MovieDetailDto
@@ -44,4 +45,9 @@ interface HomeApi {
         @Path(value = "mediaType") type : String,
         @Path(value = "mediaId") id : Int
     ):RecommendDto
+
+    @GET("{mediaType}/popular?api_key=$AUTH_API&language=en")
+    suspend fun getPopularity(
+        @Path(value = "mediaType") type : String
+    ) : PopularityDto
 }

@@ -5,9 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,8 +27,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.core.InfoIcon
 import com.nipunapps.tmdb.core.Plus
+import com.nipunapps.tmdb.homepage.presentation.components.PresentationDropDown
 import com.nipunapps.tmdb.homepage.presentation.components.Trending
-import com.nipunapps.tmdb.homepage.presentation.components.Upcoming
 import com.nipunapps.tmdb.moviedetailpage.domain.model.MovieDetailModel
 import com.nipunapps.tmdb.ui.Error
 import com.nipunapps.tmdb.ui.Screen
@@ -37,24 +38,58 @@ import com.nipunapps.tmdb.ui.theme.*
 @Composable
 fun Homepage(
     navController: NavController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    showBackground: (Boolean) -> Unit
 ) {
+
+
     val upcomingMoviesState = viewModel.upcomingMovies
-    val upComingMovies = viewModel.upcomingMovies.value.results
+    val upComingMovies = viewModel.upcomingMovies.value.data
     val trendingMovies = viewModel.trendingMovies.value.data
-    val nowPlayingMovies = viewModel.movieDetailState.value.data
+    val posterMovie = viewModel.movieDetailState.value.data
     val message = viewModel.movieDetailState.value.message
+    val nowPlaying = viewModel.nowPlaying.value.data
+    val popular = viewModel.popular.value.data
+
+    val collection = listOf(
+        PresentationCollection(
+            header = "What's Trending",
+            data = trendingMovies
+        ),
+        PresentationCollection(
+            header = "Now Playing",
+            data = nowPlaying
+        ),
+        PresentationCollection(
+            header = "Popular",
+            data = popular,
+            isDropDown = listOf(Constants.MOVIE, Constants.TV)
+        ),
+        PresentationCollection(
+            header = "Released this year",
+            data = upComingMovies
+        ),
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        val listState = rememberLazyListState()
+        val showButton by remember {
+            mutableStateOf(
+                derivedStateOf {
+                    listState.firstVisibleItemIndex > 0
+                })
+        }
+        showBackground(showButton.value)
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(),
-
         ) {
             item {
-                if (nowPlayingMovies != null) {
-                    nowPlayingMovies?.let { nowPlayMovie ->
+                if (posterMovie != null) {
+                    posterMovie?.let { nowPlayMovie ->
                         SingleSlider(
                             movie = nowPlayMovie,
                             modifier = Modifier
@@ -67,27 +102,40 @@ fun Homepage(
                 } else {
                     Spacer(modifier = Modifier.size(60.dp))
                 }
-                if (trendingMovies.isNotEmpty()) {
+            }
+            item {
+                Spacer(modifier = Modifier.size(BigPadding))
+            }
+            items(collection.size) {
+                val presentation = collection[it]
+                if (it > 0) {
                     Spacer(modifier = Modifier.size(SmallPadding))
-                    Trending(
-                        header = "What's Trending",
-                        movies = trendingMovies,
-                        modifier = Modifier.fillMaxWidth()
-                    ) { type, id ->
-                        navController.navigate(Screen.MovieDetailScreen.route + "/$type/$id")
+                }
+                if (presentation.data.isNotEmpty()) {
+                    if (presentation.isDropDown.isNotEmpty()) {
+                        PresentationDropDown(
+                            header = presentation.header,
+                            dropDown = presentation.isDropDown,
+                            movies = presentation.data,
+                            selectedIndex = viewModel.popularitySelected.value,
+                            onDropDownClick = { type, selected ->
+                                viewModel.getPopularity(type,selected)
+                            }
+                        ) { type, id ->
+                            navController.navigate(Screen.MovieDetailScreen.route + "/$type/$id")
+                        }
+                    } else {
+                        Trending(
+                            header = presentation.header,
+                            movies = presentation.data,
+                            modifier = Modifier.fillMaxSize()
+                        ) { type, id ->
+                            navController.navigate(Screen.MovieDetailScreen.route + "/$type/$id")
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.size(SmallPadding))
-                if (upComingMovies.isNotEmpty()) {
-                    Upcoming(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        header = "Released this year",
-                        movies = upComingMovies
-                    ) { id ->
-                        navController.navigate(Screen.MovieDetailScreen.route + "/movie/$id")
-                    }
-                }
+            }
+            item {
                 Spacer(modifier = Modifier.size(ExtraBigPadding))
             }
         }

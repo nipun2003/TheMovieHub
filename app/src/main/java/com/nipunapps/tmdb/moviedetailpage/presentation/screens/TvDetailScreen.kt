@@ -37,10 +37,6 @@ fun TvDetailScreen(
 ) {
     val tvDetailState = viewModel.tvDetailState.value
     val recommendState = viewModel.recommendation.value
-    val openDialog = remember { mutableStateOf(false) }
-    val key = remember {
-        mutableStateOf("")
-    }
     Box(modifier = Modifier.fillMaxSize()) {
         val listState = rememberLazyListState()
         val showButton by remember {
@@ -109,10 +105,19 @@ fun TvDetailScreen(
                     HorizontalLine()
                 }
                 item {
+                    if (tv.videos.results.isNotEmpty()) {
+                        VideoComp(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = BigPadding),
+                            videos = tv.videos.results
+                        )
+                    }else{
+                        Spacer(modifier = Modifier.size(BigPadding))
+                    }
                     TopBilledCast(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = BigPadding),
+                            .fillMaxWidth(),
                         casts = tv.casts
                     )
                     if (tv.production_companies.isNotEmpty()) {
@@ -129,15 +134,6 @@ fun TvDetailScreen(
                         list = tv.images.backdrops,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (tv.videos.results.isNotEmpty()) {
-                        VideoComp(
-                            modifier = Modifier.fillMaxWidth(),
-                            videos = tv.videos.results
-                        ) {
-                            openDialog.value = true
-                            key.value = it
-                        }
-                    }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))
                         RecommendComp(
@@ -190,7 +186,6 @@ fun TvDetailScreen(
                 }
             }
         }
-        AlertDialogComponent(openDialog = openDialog, key.value)
     }
 }
 

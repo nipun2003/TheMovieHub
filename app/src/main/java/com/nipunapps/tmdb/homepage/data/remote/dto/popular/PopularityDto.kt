@@ -1,8 +1,8 @@
-package com.nipunapps.tmdb.homepage.data.remote.dto.trending
+package com.nipunapps.tmdb.homepage.data.remote.dto.popular
 
 import com.nipunapps.tmdb.homepage.data.remote.dto.upcoming.Result
 
-data class TrendingMovieDto(
+data class PopularityDto(
     val page: Int,
     val results: List<Result>,
     val total_pages: Int,

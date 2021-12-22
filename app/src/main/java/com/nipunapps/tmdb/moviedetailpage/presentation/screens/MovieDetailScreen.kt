@@ -45,10 +45,6 @@ fun MovieDetailScreen(
 ) {
     val movieDetailState = viewModel.movieDetailState.value
     val recommendState = viewModel.recommendation.value
-    val openDialog = remember { mutableStateOf(false) }
-    val key = remember {
-        mutableStateOf("")
-    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -73,8 +69,7 @@ fun MovieDetailScreen(
                             .fillMaxWidth()
                             .height(ExtraBigPadding)
                             .background(ToolbarColor)
-                    ) {
-                    }
+                    )
                 }
                 item {
                     Header(
@@ -115,10 +110,19 @@ fun MovieDetailScreen(
                     HorizontalLine()
                 }
                 item {
+                    if (movie.videos.results.isNotEmpty()) {
+                        VideoComp(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = BigPadding),
+                            videos = movie.videos.results
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.size(BigPadding))
+                    }
                     TopBilledCast(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = BigPadding),
+                            .fillMaxWidth(),
                         casts = movie.casts
                     )
 
@@ -133,16 +137,6 @@ fun MovieDetailScreen(
                             modifier = Modifier.fillMaxWidth(),
                             list = images.backdrops
                         )
-                    }
-
-                    if (movie.videos.results.isNotEmpty()) {
-                        VideoComp(
-                            modifier = Modifier.fillMaxWidth(),
-                            videos = movie.videos.results
-                        ) {
-                            openDialog.value = true
-                            key.value = it
-                        }
                     }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))
@@ -215,7 +209,6 @@ fun MovieDetailScreen(
                 }
             }
         }
-        AlertDialogComponent(openDialog = openDialog, key.value)
     }
 }
 
