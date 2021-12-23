@@ -11,14 +11,14 @@ You will get daily suggestions for upcoming movies and TV shows and their detail
 
 # ScreenShots
 
-<p float="left">
-    <img src = "./Screenshots/home_page.jpg" width="300" height="450"/>
-    <img src = "./Screenshots/detail_1.jpg" width="300" height="450"/>
-    <img src = "./Screenshots/detail_2.jpg" width="300" height="450"/>
-    <img src = "./Screenshots/detail_3.jpg" width="300" height="450"/>
-    <img src = "./Screenshots/detail_4.jpg" width="300" height="450"/>
-    <img src = "./Screenshots/search.jpg" width="300" height="450"/>
-</p>
+<div style="display:flex;">
+    <img src = "./Screenshots/home_page.jpg" width="16%"/>
+    <img src = "./Screenshots/detail_1.jpg" width="16%"/>
+    <img src = "./Screenshots/detail_2.jpg" width="16%"/>
+    <img src = "./Screenshots/detail_3.jpg" width="16%"/>
+    <img src = "./Screenshots/detail_4.jpg" width="16%"/>
+    <img src = "./Screenshots/search.jpg" width="16%"/>
+</div>
 
 <div>
     <a href = "https://github.com/nipun2003/TheMovieHub/raw/main/app/release/TMDB.apk"> Have a try </a>
