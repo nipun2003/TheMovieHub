@@ -51,3 +51,10 @@ The API used for all actions in the app is  <a href = "https://developers.themov
    
             git push -u origin YourBranchName
  6. Create a new pull reqeust
+
+### Issues
+You can also contribute in this project by raising issues and bugs in the app.
+
+# Maintainers
+This project is maintained by
+<a href="https://github.com/nipun2003">Nipun Kumar</a>
