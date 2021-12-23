@@ -28,6 +28,14 @@ You will get daily suggestions for upcoming movies and TV shows and their detail
 # Api 
 The API used for all actions in the app is  <a href = "https://developers.themoviedb.org/3/getting-started/introduction">The movie database</a>
 
+# Libraries Used
+ 1. <a href = "https://developer.android.com/jetpack/androidx/releases/compose?gclsrc=ds&gclsrc=ds&gclid=CJLXibKg-vQCFanEhAAddN0FJg">Jetpack Compose</a> for ui
+ 2. <a href = "https://dagger.dev/hilt/">Hilt</a> for dependency injection.
+ 3. <a href = "https://square.github.io/retrofit/">Retrofit</a> for network calling.
+ 4. <a href = "https://github.com/coil-kt/coil">Coil</a> for image loading.
+ 5. <a href = "https://developer.android.com/jetpack/androidx/releases/room#groovy">Room</a> for local storage.
+ 6. <a href = "https://github.com/PierfrancescoSoffritti/android-youtube-player">Android-Youtube-Player</a> for playing youtube videos.
+
 # Contribution
 
 ### Prerequisite
