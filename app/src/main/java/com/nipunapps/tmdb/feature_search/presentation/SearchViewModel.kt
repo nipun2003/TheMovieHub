@@ -35,8 +35,18 @@ class SearchViewModel @Inject constructor(
     private val _prevQuery = mutableStateOf(emptyList<String>())
     val prevQuery: State<List<String>> = _prevQuery
 
+    private val _relatedQuery = mutableStateOf(emptyList<String>())
+    val relatedQuery: State<List<String>> = _relatedQuery
+
+    private val _relatedQueryVisibility = mutableStateOf(relatedQuery.value.isNotEmpty())
+    val relatedQueryVisibility: State<Boolean> = _relatedQueryVisibility
+
+    private val _chipsVisibility = mutableStateOf(false)
+    val chipsVisibility: State<Boolean> = _chipsVisibility
+
     private val _closeIconState = mutableStateOf(false)
     val closeIconState: State<Boolean> = _closeIconState
+
 
     init {
         viewModelScope.launch {
@@ -44,15 +54,32 @@ class SearchViewModel @Inject constructor(
                 it.query
             }.reversed()
             if (prevQuery.value.isNotEmpty()) {
-                Log.e("prev",prevQuery.value[0])
+                Log.e("prev", prevQuery.value[0])
                 onSearch(prevQuery.value[0], isRecent = true)
             }
         }
     }
 
+    fun onFocus(focus: Boolean) {
+        _chipsVisibility.value = focus
+        _relatedQueryVisibility.value = relatedQuery.value.isNotEmpty()
+    }
+
     fun updateQuery(query: String) {
         _searchQuery.value = query
+        if (query.isBlank()) {
+            _relatedQuery.value = emptyList()
+        } else {
+            getRelatedQuery(query)
+        }
+        onFocus(query.isNullOrBlank())
         _closeIconState.value = query.isNotEmpty()
+    }
+
+    private fun getRelatedQuery(query: String) {
+        viewModelScope.launch {
+            _relatedQuery.value = dao.getRelatedQuery(query).map { it.query }
+        }
     }
 
     fun onSearch(query: String, isRecent: Boolean = false) {
@@ -62,6 +89,7 @@ class SearchViewModel @Inject constructor(
         if (!isRecent) {
             _searchQuery.value = query
             _closeIconState.value = query.isNotEmpty()
+            _relatedQuery.value = emptyList()
         }
         searchJob?.cancel()
         searchJob = viewModelScope.launch {

@@ -186,6 +186,8 @@ fun SearchBox(
 ) {
     val focusManager = LocalFocusManager.current
     val prevQueries = viewModel.prevQuery.value.reversed()
+    val relatedQueries = viewModel.relatedQuery.value
+    val query = viewModel.searchQuery.value
     val focusRequester = remember {
         FocusRequester()
     }
@@ -204,18 +206,18 @@ fun SearchBox(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start
         ) {
-            var chipsVisibility by remember {
-                mutableStateOf(false)
+            var relatedVisibility by remember {
+                mutableStateOf(relatedQueries.isNotEmpty())
             }
             Box(modifier = Modifier.fillMaxWidth()) {
                 TextField(
-                    value = viewModel.searchQuery.value,
+                    value = query,
                     onValueChange = viewModel::updateQuery,
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester)
                         .onFocusChanged {
-                            chipsVisibility = it.hasFocus
+                            viewModel.onFocus(it.hasFocus)
                         },
                     placeholder = {
                         Text(
@@ -263,7 +265,7 @@ fun SearchBox(
                     )
                 }
             }
-            AnimatedVisibility(visible = chipsVisibility) {
+            AnimatedVisibility(visible = viewModel.chipsVisibility.value) {
                 PrevSearch(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -271,6 +273,52 @@ fun SearchBox(
                 ) {
                     viewModel.onSearch(it)
                     focusManager.clearFocus(force = true)
+                }
+            }
+            AnimatedVisibility(visible = viewModel.relatedQueryVisibility.value) {
+                RelatedQuery(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    relatedQueries = relatedQueries
+                ) {
+                    viewModel.onSearch(it)
+                    focusManager.clearFocus(force = true)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RelatedQuery(
+    modifier: Modifier,
+    relatedQueries : List<String>,
+    onclick: (String) -> Unit
+){
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(SmallPadding)
+    ) {
+        items(relatedQueries.size) {
+            if (it < 5) {
+                if (it > 0) {
+                    Spacer(modifier = Modifier.size(ExtraSmallPadding))
+                }
+                Surface(
+                    modifier = Modifier
+                        .clickable {
+                            onclick(relatedQueries[it])
+                        },
+                    contentColor = Color.White,
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(SmallPadding)
+                ) {
+                    Text(
+                        text = relatedQueries[it],
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(SmallPadding)
+                    )
                 }
             }
         }

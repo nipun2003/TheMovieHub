@@ -14,4 +14,7 @@ interface QueryInfoDao {
 
     @Query("SELECT * from queryresultentity")
     suspend fun getPreviousSearch() : List<QueryResultEntity>
+
+    @Query("SELECT * from queryresultentity where `query` like '%' || :search || '%'")
+    suspend fun getRelatedQuery(search:String) : List<QueryResultEntity>
 }
