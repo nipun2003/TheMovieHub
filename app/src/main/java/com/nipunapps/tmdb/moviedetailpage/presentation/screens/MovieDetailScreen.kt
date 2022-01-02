@@ -136,7 +136,11 @@ fun MovieDetailScreen(
                         FImage(
                             modifier = Modifier.fillMaxWidth(),
                             list = images.backdrops
-                        )
+                        ){
+                            navController.navigate(
+                                Screen.ImageFullScreen.route+"/$it"
+                            )
+                        }
                     }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))

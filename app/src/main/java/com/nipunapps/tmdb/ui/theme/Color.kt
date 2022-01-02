@@ -31,3 +31,4 @@ val BigPadding = 20.dp
 val ExtraSmallPadding = 5.dp
 val ExtraBigPadding = 30.dp
 val PaddingStatusBar = 40.dp
+val ActionBarSize = 60.dp

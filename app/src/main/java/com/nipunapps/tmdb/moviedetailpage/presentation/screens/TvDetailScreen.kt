@@ -133,7 +133,11 @@ fun TvDetailScreen(
                     FImage(
                         list = tv.images.backdrops,
                         modifier = Modifier.fillMaxWidth()
-                    )
+                    ){
+                        navController.navigate(
+                            Screen.ImageFullScreen.route+"/$it"
+                        )
+                    }
                     if (recommendState.isNotEmpty()) {
                         Spacer(modifier = Modifier.size(SmallPadding))
                         RecommendComp(

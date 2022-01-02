@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.nipunapps.tmdb.core.Constants
 import com.nipunapps.tmdb.moviedetailpage.data.dto.movie_detail.Backdrop
+import com.nipunapps.tmdb.moviedetailpage.data.dto.movie_detail.Result
 import com.nipunapps.tmdb.moviedetailpage.domain.model.RecommendModel
 import com.nipunapps.tmdb.ui.theme.ExtraSmallPadding
 import com.nipunapps.tmdb.ui.theme.SmallPadding
@@ -23,7 +24,8 @@ import com.nipunapps.tmdb.ui.theme.SmallPadding
 @Composable
 fun FImage(
     list: List<Backdrop>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onclick: (String) -> Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -44,6 +46,9 @@ fun FImage(
                     contentDescription = list[it].file_path,
                     modifier = Modifier
                         .padding(end = SmallPadding)
+                        .clickable {
+                            onclick(list[it].file_path.substring(1))
+                        }
                         .width(300.dp)
                         .aspectRatio(list[it].aspect_ratio.toFloat())
                         .clip(RoundedCornerShape(SmallPadding)),

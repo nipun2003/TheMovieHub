@@ -106,14 +106,9 @@ dependencies {
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.3.0"
 
-    //Data store
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
-
-    // optional - RxJava2 support
-    implementation "androidx.datastore:datastore-preferences-rxjava2:1.0.0"
-
-    // optional - RxJava3 support
-    implementation "androidx.datastore:datastore-preferences-rxjava3:1.0.0"
-
+    // Youtube player
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.5'
+
+    // Permission
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
 }

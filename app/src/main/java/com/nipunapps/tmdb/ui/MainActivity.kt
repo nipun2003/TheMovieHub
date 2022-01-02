@@ -27,11 +27,13 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.nipunapps.tmdb.R
 import com.nipunapps.tmdb.core.Constants.MOVIE
 import com.nipunapps.tmdb.core.Constants.TV
 import com.nipunapps.tmdb.feature_search.presentation.SearchScreen
 import com.nipunapps.tmdb.homepage.presentation.Homepage
+import com.nipunapps.tmdb.moviedetailpage.presentation.screens.ImageFullScreen
 import com.nipunapps.tmdb.moviedetailpage.presentation.screens.MovieDetailScreen
 import com.nipunapps.tmdb.moviedetailpage.presentation.screens.TvDetailScreen
 import com.nipunapps.tmdb.ui.theme.*
@@ -39,6 +41,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @ExperimentalPermissionsApi
     @ExperimentalAnimationApi
     @ExperimentalPagerApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,6 +155,12 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
+                            composable(
+                                route = Screen.ImageFullScreen.route +"/{image}"
+                            ){
+                                toolbarVisibility = false
+                                ImageFullScreen()
+                            }
                         }
                     }
                 }
@@ -189,7 +198,11 @@ fun Toolbar(
                 contentDescription = "Search",
                 modifier = Modifier
                     .size(40.dp)
-                    .padding(top = ExtraSmallPadding, bottom = ExtraSmallPadding, end = SmallPadding)
+                    .padding(
+                        top = ExtraSmallPadding,
+                        bottom = ExtraSmallPadding,
+                        end = SmallPadding
+                    )
                     .align(Alignment.CenterEnd)
             )
         }
