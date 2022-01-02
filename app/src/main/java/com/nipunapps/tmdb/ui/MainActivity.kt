@@ -5,6 +5,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -32,6 +34,7 @@ import com.nipunapps.tmdb.R
 import com.nipunapps.tmdb.core.Constants.MOVIE
 import com.nipunapps.tmdb.core.Constants.TV
 import com.nipunapps.tmdb.feature_search.presentation.SearchScreen
+import com.nipunapps.tmdb.homepage.presentation.HomeViewModel
 import com.nipunapps.tmdb.homepage.presentation.Homepage
 import com.nipunapps.tmdb.moviedetailpage.presentation.screens.ImageFullScreen
 import com.nipunapps.tmdb.moviedetailpage.presentation.screens.MovieDetailScreen
@@ -41,11 +44,19 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: HomeViewModel by viewModels()
+
+    @ExperimentalPagerApi
     @ExperimentalPermissionsApi
     @ExperimentalAnimationApi
-    @ExperimentalPagerApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen().apply {
+            setKeepVisibleCondition {
+                viewModel.upcomingMovies.value.isLoading
+            }
+        }
         window.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -96,7 +107,10 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 toolbarVisibility = true
                                 toolbarBackground = false
-                                Homepage(navController = navController){
+                                Homepage(
+                                    navController = navController,
+                                    viewModel = viewModel
+                                ) {
                                     toolbarBackground = it
                                 }
                             }
@@ -156,8 +170,8 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             composable(
-                                route = Screen.ImageFullScreen.route +"/{image}"
-                            ){
+                                route = Screen.ImageFullScreen.route + "/{image}"
+                            ) {
                                 toolbarVisibility = false
                                 ImageFullScreen()
                             }

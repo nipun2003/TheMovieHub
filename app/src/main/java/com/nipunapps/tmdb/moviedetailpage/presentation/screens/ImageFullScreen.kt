@@ -3,6 +3,7 @@ package com.nipunapps.tmdb.moviedetailpage.presentation.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -54,6 +55,9 @@ fun ImageFullScreen(
         val rotationState = remember { mutableStateOf(0f) }
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
+        var zoom by remember {
+            mutableStateOf(2)
+        }
 
         if (viewModel.startDownload.value) {
             PermissionDialog {
@@ -160,11 +164,33 @@ fun ImageFullScreen(
                 modifier = Modifier
                     .align(Center)
                     .zIndex(-3f)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = { /* Called when the gesture starts */ },
+                            onDoubleTap = {
+                                if (zoom == 0) {
+                                    offsetX = 0f
+                                    offsetY = 0f
+                                    scale.value = 1f
+                                    rotationState.value = 0f
+                                    zoom = 2
+                                } else {
+                                    offsetX = 0f
+                                    offsetY = 0f
+                                    scale.value *= 2
+                                    rotationState.value = 0f
+                                    zoom-=1
+                                }
+                            },
+                            onLongPress = { /* Called on Long Press */ },
+                            onTap = { /* Called on Tap */ }
+                        )
+                    }
                     .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
                     .graphicsLayer(
                         // adding some zoom limits (min 50%, max 200%)
-                        scaleX = maxOf(.5f, minOf(3f, scale.value)),
-                        scaleY = maxOf(.5f, minOf(3f, scale.value)),
+                        scaleX = maxOf(.5f, minOf(100f, scale.value)),
+                        scaleY = maxOf(.5f, minOf(100f, scale.value)),
                         rotationZ = rotationState.value
                     )
             )
