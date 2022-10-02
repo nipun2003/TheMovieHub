@@ -47,6 +47,10 @@ class HomeViewModel @Inject constructor(
     val popularitySelected :State<Int> = _popularitySelected
 
     init {
+        /*
+         Here i call different methods for showing different movie genre, but it's too lagy and not a good approach.
+         Task is to understand the logic of these code and improve the code so that functionallity of the app should be same.
+         */
         getPosterMovie()
         getNowPlaying()
         getPopularity(MOVIE,popularitySelected.value)

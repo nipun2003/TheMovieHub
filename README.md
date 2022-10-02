@@ -58,7 +58,9 @@ The API used for all actions in the app is  <a href = "https://developers.themov
  5. Push your branch
    
             git push -u origin YourBranchName
- 6. Create a new pull reqeust
+ 6. Create a new pull request
+#### Important 
+ For this project gradle version 7.0.3 is used so when opening the project first time, Android studio will download gradle 7.0.3 which is around 112MB, so make sure Internet or wifi available in terms of building the app.
 
 ### Issues
 You can also contribute in this project by raising issues and bugs in the app.
